@@ -1,25 +1,52 @@
 Section Name: .text
-Virtual Address: 0x2000
-Raw Size: 33424384
-Characteristics: 0x60000020
+Virtual Address: 0x1000
+Raw Size: 19968
+Characteristics: 0x60300020
 
 Checking for Readable and Executable sections:
 Section is Readable
 Section is Executable
 ----------------------------------------
-Section Name: .rsrc
-Virtual Address: 0x1fe4000
-Raw Size: 372224
-Characteristics: 0x40000040
+Section Name: .data
+Virtual Address: 0x6000
+Raw Size: 512
+Characteristics: 0xc0300040
 
 Checking for Readable and Executable sections:
 Section is Readable
 Section is NOT Executable
 ----------------------------------------
-Section Name: .reloc
-Virtual Address: 0x2040000
-Raw Size: 512
-Characteristics: 0x42000040
+Section Name: .rdata
+Virtual Address: 0x7000
+Raw Size: 2048
+Characteristics: 0x40300040
+
+Checking for Readable and Executable sections:
+Section is Readable
+Section is NOT Executable
+----------------------------------------
+Section Name: .bss
+Virtual Address: 0x8000
+Raw Size: 0
+Characteristics: 0xc0300080
+
+Checking for Readable and Executable sections:
+Section is Readable
+Section is NOT Executable
+----------------------------------------
+Section Name: .idata
+Virtual Address: 0x11000
+Raw Size: 3072
+Characteristics: 0xc0300040
+
+Checking for Readable and Executable sections:
+Section is Readable
+Section is NOT Executable
+----------------------------------------
+Section Name: .rsrc
+Virtual Address: 0x12000
+Raw Size: 17408
+Characteristics: 0xc0300040
 
 Checking for Readable and Executable sections:
 Section is Readable

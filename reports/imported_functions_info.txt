@@ -1,0 +1,2 @@
+DLL Library: mscoree.dll
+	Imported Function: _CorExeMain

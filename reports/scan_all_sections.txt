@@ -1,0 +1,27 @@
+Section Name: .text
+Virtual Address: 0x2000
+Raw Size: 33424384
+Characteristics: 0x60000020
+
+Checking for Readable and Executable sections:
+Section is Readable
+Section is Executable
+----------------------------------------
+Section Name: .rsrc
+Virtual Address: 0x1fe4000
+Raw Size: 372224
+Characteristics: 0x40000040
+
+Checking for Readable and Executable sections:
+Section is Readable
+Section is NOT Executable
+----------------------------------------
+Section Name: .reloc
+Virtual Address: 0x2040000
+Raw Size: 512
+Characteristics: 0x42000040
+
+Checking for Readable and Executable sections:
+Section is Readable
+Section is NOT Executable
+----------------------------------------

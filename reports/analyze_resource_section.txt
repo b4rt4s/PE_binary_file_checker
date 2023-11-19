@@ -1,0 +1,58 @@
+Resource Type: None
+	Resource ID: None
+	Resource Language ID: None
+	Resource Size: 1128
+	Resource ID: None
+	Resource Language ID: None
+	Resource Size: 4264
+	Resource ID: None
+	Resource Language ID: None
+	Resource Size: 9640
+Resource Type: None
+	Resource ID: None
+	Resource Language ID: None
+	Resource Size: 6
+	Resource ID: None
+	Resource Language ID: None
+	Resource Size: 2
+	Resource ID: None
+	Resource Language ID: None
+	Resource Size: 5
+	Resource ID: None
+	Resource Language ID: None
+	Resource Size: 17
+	Resource ID: None
+	Resource Language ID: None
+	Resource Size: 5
+	Resource ID: None
+	Resource Language ID: None
+	Resource Size: 2
+	Resource ID: None
+	Resource Language ID: None
+	Resource Size: 3
+	Resource ID: None
+	Resource Language ID: None
+	Resource Size: 25
+	Resource ID: None
+	Resource Language ID: None
+	Resource Size: 2
+	Resource ID: None
+	Resource Language ID: None
+	Resource Size: 50
+	Resource ID: None
+	Resource Language ID: None
+	Resource Size: 115
+	Resource ID: None
+	Resource Language ID: None
+	Resource Size: 53
+	Resource ID: None
+	Resource Language ID: None
+	Resource Size: 104
+Resource Type: None
+	Resource ID: None
+	Resource Language ID: None
+	Resource Size: 48
+Resource Type: None
+	Resource ID: None
+	Resource Language ID: None
+	Resource Size: 892

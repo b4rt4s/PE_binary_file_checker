@@ -1,0 +1,3 @@
+Number of Code Sections: 1
+Number of Data Sections: 4
+Section Ratio (Code : Data): 0.25

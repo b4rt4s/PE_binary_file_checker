@@ -147,8 +147,8 @@ def check_digital_signatures(file_path, output_file):
         with open(output_file, 'w') as file:
             file.write(f"Error reading PE file: {e}")
 
-#Funkcja ta przegląda struktury danych w pliku PE takie jak tablice importu, eksportu, adresy relokacji itp.
-#Pozwala to w łatwiejszy sposób zrozumieć jak zasoby są wykorzystywane przez plik co ułatwia poszukiwanie potencjalnych zagrożeń.
+#This function reviews the data structures in the PE file such as import arrays, export arrays, relocation addresses, etc.
+#This makes it easier to understand how resources are used by the file making it easier to look for potential threats.
 def analyze_pe_data_structures(file_path, output_file):
     try:
         pe = pefile.PE(file_path)
@@ -171,6 +171,94 @@ def analyze_pe_data_structures(file_path, output_file):
             if hasattr(pe, 'DIRECTORY_ENTRY_BASERELOC'):
                 for relocation in pe.DIRECTORY_ENTRY_BASERELOC.entries:
                     file.write(f"  Virtual Address: {hex(relocation.virtual_address)}\n")
+
+    except pefile.PEFormatError as e:
+        with open(output_file, 'w') as file:
+            file.write(f"Error reading PE file: {e}")
+
+#This function checks what dynamic libraries are used by the file. 
+#It makes it easier to analyze internal dependencies when looking for potential dangers
+def analyze_dependency_sections(file_path, output_file):
+    try:
+        pe = pefile.PE(file_path)
+
+        dependencies = set()
+
+        for entry in pe.DIRECTORY_ENTRY_IMPORT:
+            dependencies.add(entry.dll.decode())
+
+        with open(output_file, 'w') as file:
+            file.write("Dependency Analysis:\n")
+            file.write("List of Dependencies:\n")
+            for dependency in dependencies:
+                file.write(f"  {dependency}\n")
+
+    except pefile.PEFormatError as e:
+        with open(output_file, 'w') as file:
+            file.write(f"Error reading PE file: {e}")
+
+#The debugging sections can contain information that is helpful during analysis,
+#especially during the debugging or reverse engineering process.
+def analyze_debug_sections(file_path, output_file):
+    try:
+        pe = pefile.PE(file_path)
+
+        debug_info = []
+
+        if hasattr(pe, 'DIRECTORY_ENTRY_DEBUG'):
+            for entry in pe.DIRECTORY_ENTRY_DEBUG:
+                debug_info.append(f"Debug Type: {entry.struct.Type}")
+                debug_info.append(f"Debug Size: {entry.struct.SizeOfData}")
+                debug_info.append(f"Debug Address: {hex(entry.struct.AddressOfRawData)}")
+                debug_info.append(f"Timestamp: {entry.struct.TimeDateStamp}")
+                debug_info.append("\n")
+
+        with open(output_file, 'w') as file:
+            file.write("Debug Sections Analysis:\n")
+            if debug_info:
+                file.writelines(debug_info)
+            else:
+                file.write("No Debug Sections found.")
+
+    except pefile.PEFormatError as e:
+        with open(output_file, 'w') as file:
+            file.write(f"Error reading PE file: {e}")
+
+#This function will analyze the import export sections of the PE file.
+#These sections contain information about functions imported from external
+#libraries and functions exported by the file itself.
+def analyze_import_export_sections(file_path, output_file):
+    try:
+        pe = pefile.PE(file_path)
+
+        import_info = []
+        export_info = []
+
+        for entry in pe.DIRECTORY_ENTRY_IMPORT:
+            dll_name = entry.dll.decode()
+            import_info.append(f"Imported DLL: {dll_name}")
+            for imp in entry.imports:
+                if imp.name:
+                    import_info.append(f"  Function: {imp.name.decode()}")
+
+        if hasattr(pe, 'DIRECTORY_ENTRY_EXPORT'):
+            for exp in pe.DIRECTORY_ENTRY_EXPORT.symbols:
+                if exp.name:
+                    export_info.append(f"Exported Function: {exp.name.decode()}")
+
+        with open(output_file, 'w') as file:
+            file.write("Import and Export Sections Analysis:\n\n")
+            file.write("Imported Functions:\n")
+            if import_info:
+                file.writelines("\n".join(import_info))
+            else:
+                file.write("No imported functions found.")
+
+            file.write("\n\nExported Functions:\n")
+            if export_info:
+                file.writelines("\n".join(export_info))
+            else:
+                file.write("No exported functions found.")
 
     except pefile.PEFormatError as e:
         with open(output_file, 'w') as file:

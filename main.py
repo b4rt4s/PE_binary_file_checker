@@ -13,6 +13,9 @@ def show_security_informations_about_file(file_path):
     sec_info.analyze_resource_section(file_path, "reports/analyze_resource_section.txt")
     sec_info.check_digital_signatures(file_path, "reports/check_digital_signatures.txt")
     sec_info.analyze_pe_data_structures(file_path, "reports/analyze_pe_data_structures.txt")
+    sec_info.analyze_debug_sections(file_path, "reports/analyze_debug_sections.txt")
+    sec_info.analyze_dependency_sections(file_path, "reports/analyze_dependency_sections.txt")
+    sec_info.analyze_import_export_sections(file_path, "reports/analyze_import_export_sections.txt")
 
 show_basic_informations_about_file(file_path)
 show_security_informations_about_file(file_path)

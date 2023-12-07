@@ -1,7 +1,3 @@
 Dependency Analysis:
 List of Dependencies:
-  ADVAPI32.DLL
-  USER32.dll
-  SHELL32.DLL
-  KERNEL32.dll
-  msvcrt.dll
+  mscoree.dll

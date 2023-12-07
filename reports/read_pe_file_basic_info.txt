@@ -1,13 +1,9 @@
-File Name: sample_files\minecraft.exe
-Entry Point Address: 0x1290
-File Size: 94208
+File Name: sample_files\MinecraftInstaller.exe
+Entry Point Address: 0x1fe22f2
+File Size: 33824768
+File Signature (ASCII): PE00
 
 Sections:
-.text 19968 0x1000
-.data 512 0x6000
-.rdata 2048 0x7000
-.bss 0 0x8000
-.idata 3072 0x11000
-.rsrc 17408 0x12000
-
-MD5 Checksum: c3db052da531710367faf5e011475715
+.text 33424384 0x2000
+.rsrc 372224 0x1fe4000
+.reloc 512 0x2040000

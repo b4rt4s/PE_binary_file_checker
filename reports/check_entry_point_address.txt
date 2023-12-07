@@ -1,1 +1,1 @@
-Entry Point Address is outside the valid range.
+Entry Point Address is within the valid range.

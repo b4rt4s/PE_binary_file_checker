@@ -1,4 +1,5 @@
 import pefile
+import warnings
 
 #This function looks through all the sections in the PE file and identifies those that are code sections.
 #It then checks their attributes, including whether the section is read-only (IMAGE_SCN_MEM_READ) or executable (IMAGE_SCN_MEM_EXECUTE).
@@ -20,6 +21,7 @@ def scan_all_sections(file_path, output_file):
                 file.write(f"Section Name: {section_name}\n")
                 file.write(f"Virtual Address: {hex(section.VirtualAddress)}\n")
                 file.write(f"Raw Size: {section.SizeOfRawData}\n")
+                file.write(f"Raw Pointer: {section.PointerToRawData}\n")
                 file.write(f"Characteristics: {hex(section.Characteristics)}\n")
                 file.write("\nChecking for Readable and Executable sections:\n")
 
@@ -98,83 +100,65 @@ def count_code_data_sections(file_path, output_file):
 
 #This function reads the resource section, which contains resources such as icons, texts, bitmaps and other resources used by programs.
 #Using it, you can read their data and see if there are any unusual or suspicious resources in it
+import pefile
+import binascii
+
 def analyze_resource_section(file_path, output_file):
     try:
         pe = pefile.PE(file_path)
 
         with open(output_file, 'w') as file:
-            for resource_type in pe.DIRECTORY_ENTRY_RESOURCE.entries:
-                file.write(f"Resource Type: {resource_type.name}\n")
-                for resource_id in resource_type.directory.entries:
-                    if hasattr(resource_id, 'directory'):
-                        for resource_lang in resource_id.directory.entries:
-                            data_rva = resource_lang.data.struct.OffsetToData
-                            size = resource_lang.data.struct.Size
-                            data = pe.get_memory_mapped_image()[data_rva:data_rva+size]
+            if hasattr(pe, 'DIRECTORY_ENTRY_RESOURCE'):
+                for resource_type in pe.DIRECTORY_ENTRY_RESOURCE.entries:
+                    if hasattr(resource_type, 'name'):
+                        file.write(f"Resource Type: {resource_type.name}\n")
+                    else:
+                        file.write(f"Resource Type ID: {resource_type.struct.Id}\n")
 
-                            file.write(f"\tResource ID: {resource_id.name}\n")
-                            file.write(f"\tResource Language ID: {resource_lang.name}\n")
-                            file.write(f"\tResource Size: {size}\n")
+                    if hasattr(resource_type, 'directory'):
+                        for resource_id in resource_type.directory.entries:
+                            if hasattr(resource_id, 'directory'):
+                                for resource_lang in resource_id.directory.entries:
+                                    data_rva = resource_lang.data.struct.OffsetToData
+                                    size = resource_lang.data.struct.Size
+                                    data = pe.get_memory_mapped_image()[data_rva:data_rva+size]
 
+                                    file.write(f"\tResource ID: {resource_id.struct.Id}\n")
+                                    file.write(f"\tResource Language ID: {resource_lang.data.lang}\n")
+                                    file.write(f"\tResource Size: {size}\n")
+                                    
+                                    # Zapisanie surowych danych zasobu w formacie hex
+                                    hex_data = binascii.hexlify(data)
+                                    file.write(f"\tResource Data (hex): {hex_data}\n\n")
+            else:
+                file.write("No resource section found in the file.")
     except pefile.PEFormatError as e:
         with open(output_file, 'w') as file:
             file.write(f"Error reading PE file: {e}")
+
 
 import pefile
 
 #This function is to identify and check the digital signatures of the PE file.
 #This can help you confirm the authenticity of this file and identify whether it has any unauthorized changes. 
-
 def check_digital_signatures(file_path, output_file):
     try:
         pe = pefile.PE(file_path)
-
-        with open(output_file, 'w') as file:
-            if hasattr(pe, 'DIRECTORY_ENTRY_SECURITY'):
-                file.write("Digital Signatures found in the file:\n")
-                for entry in pe.DIRECTORY_ENTRY_SECURITY:
-                    file.write(f"Signature: {entry.description}\n")
-                    file.write(f"  Revision: {entry.revision}\n")
-                    file.write(f"  Certificates:\n")
-                    for cert in entry.certificates:
-                        file.write(f"    Issuer: {cert.issuer}\n")
-                        file.write(f"    Subject: {cert.subject}\n")
-
-            else:
-                file.write("No Digital Signatures found in the file.")
-
+        if hasattr(pe, 'DIRECTORY_ENTRY_SECURITY'):
+            with open(output_file, 'w') as file:
+                file.write("Raw Digital Signature Data:\n")
+                security_entry = pe.OPTIONAL_HEADER.DATA_DIRECTORY[pefile.DIRECTORY_ENTRY['IMAGE_DIRECTORY_ENTRY_SECURITY']]
+                if security_entry.VirtualAddress != 0:
+                    file.write(f"Offset: {security_entry.VirtualAddress}, Size: {security_entry.Size}\n")
+                else:
+                    file.write("No Digital Signatures found in the file.\n")
+        else:
+            with open(output_file, 'w') as file:
+                file.write("No Digital Signatures found in the file.\n")
     except pefile.PEFormatError as e:
         with open(output_file, 'w') as file:
             file.write(f"Error reading PE file: {e}")
 
-#This function reviews the data structures in the PE file such as import arrays, export arrays, relocation addresses, etc.
-#This makes it easier to understand how resources are used by the file making it easier to look for potential threats.
-def analyze_pe_data_structures(file_path, output_file):
-    try:
-        pe = pefile.PE(file_path)
-
-        with open(output_file, 'w') as file:
-            file.write("PE Data Structures Analysis:\n")
-
-            file.write("Imports:\n")
-            for entry in pe.DIRECTORY_ENTRY_IMPORT:
-                file.write(f"  DLL: {entry.dll.decode()}\n")
-                for imp in entry.imports:
-                    file.write(f"    Function: {imp.name.decode()}\n")
-
-            file.write("\nExports:\n")
-            if hasattr(pe, 'DIRECTORY_ENTRY_EXPORT'):
-                for exp in pe.DIRECTORY_ENTRY_EXPORT.symbols:
-                    file.write(f"  Exported Function: {exp.name.decode()}\n")
-
-            file.write("\nBase Relocations:\n")
-            if hasattr(pe, 'DIRECTORY_ENTRY_BASERELOC'):
-                for relocation in pe.DIRECTORY_ENTRY_BASERELOC.entries:
-                    file.write(f"  Virtual Address: {hex(relocation.virtual_address)}\n")
-
-    except pefile.PEFormatError as e:
-        with open(output_file, 'w') as file:
-            file.write(f"Error reading PE file: {e}")
 
 #This function checks what dynamic libraries are used by the file. 
 #It makes it easier to analyze internal dependencies when looking for potential dangers
@@ -263,3 +247,17 @@ def analyze_import_export_sections(file_path, output_file):
     except pefile.PEFormatError as e:
         with open(output_file, 'w') as file:
             file.write(f"Error reading PE file: {e}")
+
+def warnings_pe_file_basic_info(file_path, output_file):
+    warnings.simplefilter('default')
+
+    try:
+        pe = pefile.PE(file_path)
+
+        with open(output_file, 'w') as file:
+            for warning in pe.get_warnings():
+                file.write(f"Warning: {warning}")
+
+    except pefile.PEFormatError as e:
+        with open(output_file, 'w') as file:
+            file.write("Error reading PE file: {}".format(e))

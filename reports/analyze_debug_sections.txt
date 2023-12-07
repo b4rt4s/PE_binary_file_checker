@@ -1,2 +1,2 @@
 Debug Sections Analysis:
-No Debug Sections found.
+Debug Type: 2Debug Size: 284Debug Address: 0x1fe2184Timestamp: 1694131179
